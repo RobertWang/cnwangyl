@@ -24,3 +24,60 @@ Server Info / 周期较长
 Network
 	ping
 	ip change
+
+
+任务执行的类型
+1. 被动监听 : 定时状态更新
+2. 主动监听 : 事件触发式的更新
+3. 主动执行 : 执行一些简单的管理命令
+	1. 内置任务 (服务重启等)
+	2. 手工定义 (x 因为安全考虑，暂时不允许使用)
+
+client -> get_client_sysinfo -> connect redis -> <match sysinfo>
+-> :not found -> disconnect -> (exit);
+-> :found -> update sysinfo -> listen -> dispatch invoke
+
+
+
+服务状态检测
+### OpenSSH
+ps aux | grep /usr/sbin/sshd | wc -l == 0 => [error]
+
+### MySQL 服务是否已经启动
+10.207.26.25{0,1}
+/usr/local/mysql/bin/mysqladmin status --socket=/data0/DB/{port}/mysql.sock | grep "error" | wc -l == 1 => error
+ps aux | grep mysqld | grep {port} | wc -l == 0 => [error]
+
+
+### Redis 服务检测
+redis-cli -h {host} -p {port} info | grep process_id | wc -l == 0 => [error]
+process_id:205
+
+
+
+# 10.207.0.225
+>	Redis
+/usr/local/redis-2.4.17/bin/redis-server
+	:6379 /usr/local/redis-2.4.17/etc/m-redis.conf
+	:6380 /usr/local/redis-2.4.17/etc/m6380-redis.conf
+>	Gearman
+/usr/local/gearman/sbin/gearmand
+	:4730 
+>	?
+/usr/local/sinasrv2/sbin/gmond
+
+# 10.207.0.226
+>	redis
+/usr/local/redis-2.4.17/bin/redis-server
+	:6379 /usr/local/redis-2.4.17/etc/m-redis.conf
+	:6380 /usr/local/redis-2.4.17/etc/m6380-redis.conf
+>	Gearman
+/usr/local/gearman/sbin/gearmand
+	:4730 
+	:4731 
+	:4732 
+	:4733
+
+
+
+
