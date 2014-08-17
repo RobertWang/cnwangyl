@@ -38,6 +38,12 @@ client -> get_client_sysinfo -> connect redis -> <match sysinfo>
 -> :found -> update sysinfo -> listen -> dispatch invoke
 
 
+```
+Node js 
+depandences:
+redis
+```
+
 
 服务状态检测
 ### OpenSSH
@@ -55,7 +61,7 @@ process_id:205
 
 
 
-# 10.207.0.225
+# 10.207.0.225 (dev)
 >	Redis
 /usr/local/redis-2.4.17/bin/redis-server
 	:6379 /usr/local/redis-2.4.17/etc/m-redis.conf
@@ -66,7 +72,7 @@ process_id:205
 >	?
 /usr/local/sinasrv2/sbin/gmond
 
-# 10.207.0.226
+# 10.207.0.226 (dev)
 >	redis
 /usr/local/redis-2.4.17/bin/redis-server
 	:6379 /usr/local/redis-2.4.17/etc/m-redis.conf
@@ -77,6 +83,81 @@ process_id:205
 	:4731 
 	:4732 
 	:4733
+
+
+
+__自动执行定时任务__
+
+
+
+
+创建一个PaaS平台，即维护一套 PaaS 服务构建树
+
+举例 : 内网 dev 环境
+
+* paas_id
+	* (角色[])
+	* 负载均衡 / 反向代理 [Nginx / Varnish]
+	* Web Server [Nginx]
+	* Web Server [Apache]
+	* Couchbase / Memcached
+	* Cache / [Redis]
+	* Data / COMDB
+	* Data / Mysql
+	* VFS / PhotoLib
+	* VFS / FS
+	* RPC / Gearman
+	* SCM / Deploy
+	* MM / SSH
+	* MM / Monitor
+
+
+## run flow
+
+client
+load base config
+	get the server ip:port
+	check server connection
+setup monitor
+	get current server info, and ip
+	get services on the server with {ip}
+	set server alive && send signal to channel <update:info:{ip}:alive>
+	run listen() for listen manage signel
+	run monitoring() for automaticly update status
+		update the server alive status && send signal to channel
+			所有服务器存活信息 <servers:alive> | hash [{ip}:string 1 alive 0 died]
+			当前服务器存活信息 <server:alive:{ip}> | string 1 alive 0 died
+			服务器状态更新消息 <update:info, json> | channel | publish
+				json: { type:'alive', ip:{ip}, alive:{0/1} }
+		update the server workload status && send signal to channel
+			当前服务器状态更新历史记录 <server:workload:{ip}> | set json
+				json: [{ timestamp:'time', info:{...} }, ...]
+			服务器状态更新消息 <update:info, "json">
+				json: { type:'workload', ip:{ip}, info:{...} }
+		update each service status && send signal to channel
+			服务存活信息 <service:{ip}:{role}:{instance}:alive> | string 1 alive 0 died
+			当前服务器的角色定义 <update:info, json> | channel | publish
+				json : { type:'service', role:{role}, instance:{instance}, alive:{0/1}}
+			
+
+## Redis Key
+
+	Name space plan
+
+* 所有服务器的基本信息
+
+key : server:info:{ip}
+type : hash
+
+* 所有服务器的配置信息
+
+key : server:config:{ip}
+type : hash
+
+所有服务
+
+
+* 所有服务的基本信息
 
 
 
