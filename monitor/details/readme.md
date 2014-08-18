@@ -154,6 +154,81 @@ type : hash
 key : server:config:{ip}
 type : hash
 
+services : {
+	ssh:{
+		'_': {
+			protected: true
+		},
+		'default': {
+			alive:{
+				'cmd': 'ps aux | grep sshd | grep /usr/local/sshd | wc -l'
+			}
+		}
+	},
+	mysql:{
+		'3301': {
+			alive: {
+				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+			},
+			workload: {
+				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
+				'type': 'info'
+			}
+		},
+		'3302': {
+			alive: {
+				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+			},
+			workload: {
+				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
+				'type': 'info'
+			}
+		},
+		'3305': {
+			alive: {
+				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+			},
+			workload: {
+				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
+				'type': 'info'
+			}
+		},
+		'3306': {
+			alive: {
+				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+			},
+			workload: {
+				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
+				'type': 'info'
+			}
+		},
+		'3307': {
+			alive: {
+				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+			},
+			workload: {
+				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
+				'type': 'info'
+			}
+		}
+	}
+}
+controlled: {
+	'system': {
+		'default': {
+			'restart': 'reboot',
+			'shutdown': 'shutdown -h now'
+		},
+	},
+	mysql: {
+		'default': {
+			'start': '/usr/local/sbin/mysql_service start :port:',
+			'restart': '/usr/local/sbin/mysql_service restart :port:',
+			'stop': '/usr/local/sbin/mysql_service stop :port:'
+		}
+	}
+}
+
 所有服务
 
 
