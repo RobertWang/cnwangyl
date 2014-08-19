@@ -168,7 +168,8 @@ services : {
 	mysql:{
 		'3301': {
 			alive: {
-				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+				'cmd': '/usr/local/sbin/mysql_service status :port:',
+				'true': 'alive'
 			},
 			workload: {
 				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
@@ -177,7 +178,8 @@ services : {
 		},
 		'3302': {
 			alive: {
-				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+				'cmd': '/usr/local/sbin/mysql_service status :port:',
+				'true': 'alive'
 			},
 			workload: {
 				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
@@ -186,7 +188,8 @@ services : {
 		},
 		'3305': {
 			alive: {
-				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+				'cmd': '/usr/local/sbin/mysql_service status :port:',
+				'true': 'alive'
 			},
 			workload: {
 				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
@@ -195,7 +198,8 @@ services : {
 		},
 		'3306': {
 			alive: {
-				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+				'cmd': '/usr/local/sbin/mysql_service status :port:',
+				'true': 'alive'
 			},
 			workload: {
 				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
@@ -204,7 +208,8 @@ services : {
 		},
 		'3307': {
 			alive: {
-				'cmd': 'ps aux | grep mysqld_safe | grep :port: | wc -l',
+				'cmd': '/usr/local/sbin/mysql_service status :port:',
+				'true': 'alive'
 			},
 			workload: {
 				'cmd': 'mysqladmin status --socket=/data0/DB/:port:/mysql.sock',
@@ -233,6 +238,28 @@ controlled: {
 
 
 * 所有服务的基本信息
+
+
+消息频道
+channel: `message:{type}`
+message: json
+
+type可以是以下几类
+* command		执行命令操作
+	type	embed,run
+	cmd		要执行的命令
+* alive		刷新存活信息
+	type	system,service
+	role	'mysql,ssh,nginx...'
+	instance	实例名称
+* info		刷新信息
+	type	system,service
+	instance	实例名称
+* update	消息更新 ( 一般是从Client推送给服务器 )
+	server	ipaddress
+	service	服务名称role
+	instance 实例名称
+
 
 
 
